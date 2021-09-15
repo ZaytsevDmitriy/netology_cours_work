@@ -33,8 +33,6 @@ class vkontakte_profile_photo:
             vk_photo_list.append(vk_photo_dict)
         return vk_photo_list
 
-
-
 class YaUploader:
     def __init__(self, token: str):
         self.token = token
