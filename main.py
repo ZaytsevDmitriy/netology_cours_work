@@ -40,8 +40,6 @@ class VkontakteProfilePhoto:
                 vk_photo_dict['url'] = i['sizes'][-1]['url']
             vk_photo_list.append(vk_photo_dict)
         return vk_photo_list
-        # with open('file information.json', 'w', encoding='utf-8') as file_objekt:
-        #     file_objekt.write(result)
 
 
 class YaUploader:
@@ -68,21 +66,37 @@ class YaUploader:
                 print(f"Added new folder \"{user_id}\"")
 
     def upload_by_url(self, picture_list):
-        bar = IncrementalBar('Uploaded files', max=len(picture_list))
-        for i in picture_list:
-            file_name = i['file_name']
-            picture_url = i['url']
-            url = "https://cloud-api.yandex.net/v1/disk/resources/upload/"
-            headers = self.get_headers()
-            params = {
-                'path': f'{user_id}/{file_name}.jpg',
-                'url': f'{picture_url}'
-            }
-            response = requests.post(url=url, params=params, headers=headers)
-            res = response.json()
-            bar.next()
-            time.sleep(1)
-        bar.finish()
+        if len(picture_list) > 5:
+            number_photos = int(input(f'В альбоме {len(picture_list)} фото. Сколько необходимо сохранить? '))
+            bar = IncrementalBar('Uploaded files', max=number_photos)
+            for i in picture_list[:number_photos]:
+                file_name = i['file_name']
+                picture_url = i['url']
+                url = "https://cloud-api.yandex.net/v1/disk/resources/upload/"
+                headers = self.get_headers()
+                params = {
+                    'path': f'{user_id}/{file_name}.jpg',
+                    'url': f'{picture_url}'
+                }
+                response = requests.post(url=url, params=params, headers=headers)
+                bar.next()
+                time.sleep(1)
+            bar.finish()
+        else:
+            bar = IncrementalBar('Uploaded files', max=len(picture_list))
+            for i in picture_list:
+                file_name = i['file_name']
+                picture_url = i['url']
+                url = "https://cloud-api.yandex.net/v1/disk/resources/upload/"
+                headers = self.get_headers()
+                params = {
+                    'path': f'{user_id}/{file_name}.jpg',
+                    'url': f'{picture_url}'
+                }
+                response = requests.post(url=url, params=params, headers=headers)
+                bar.next()
+                time.sleep(1)
+            bar.finish()
 
 
 def main_logic(token_vk, token_yandex):
