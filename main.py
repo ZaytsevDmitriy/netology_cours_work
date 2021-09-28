@@ -2,11 +2,21 @@ import requests
 import time
 from progress.bar import IncrementalBar
 from datetime import date
+import os.path
 
-with open('vktoken.txt', 'r') as file_objekt:
-    TOKEN = file_objekt.read().strip()
-with open('yandex_token.txt', 'r') as file_objekt:
-    YA_TOKEN = file_objekt.read().strip()
+if os.path.isfile('vktoken.txt') is False:
+    print('No token VK')
+    exit()
+else:
+    with open('vktoken.txt', 'r') as file_objekt:
+        TOKEN = file_objekt.read().strip()
+
+if os.path.isfile('yandex_token.txt') is False:
+    print('No token Yandex')
+    exit()
+else:
+    with open('yandex_token.txt', 'r') as file_objekt:
+        YA_TOKEN = file_objekt.read().strip()
 
 user_id = input('Введите ID')
 
@@ -20,7 +30,7 @@ class VkontakteProfilePhoto:
         url = 'https://api.vk.com/method/photos.get'
         params = {
             'user_id': user_id,
-            'access_token': TOKEN,
+            'access_token': self.token,
             'v': '5.131',
             'album_id': 'profile',
             'extended': '1'}
@@ -57,9 +67,7 @@ class YaUploader:
         headers = self.get_headers()
         params = {"path": user_id}
         request = requests.get(url=url, params=params, headers=headers)
-        if request.status_code == 200:
-            pass
-        else:
+        if request.status_code != 200:
             response = requests.put(url=url, params=params, headers=headers)
             response.raise_for_status()
             if response.status_code == 201:
@@ -95,7 +103,6 @@ class YaUploader:
                 }
                 response = requests.post(url=url, params=params, headers=headers)
                 bar.next()
-                time.sleep(1)
             bar.finish()
 
 
